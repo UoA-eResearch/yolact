@@ -824,3 +824,19 @@ def set_dataset(dataset_name:str):
     """ Sets the dataset of the current config. """
     cfg.dataset = eval(dataset_name)
     
+
+sidewalks = yolact_im700_config.copy({
+    'name': 'sidewalks',
+    'dataset': dataset_base.copy({
+        'name': 'sidewalks',
+        'train_images': 'data/sidewalks/train',
+        'train_info':   'data/sidewalks/train_coco.json',
+
+        'valid_images': 'data/sidewalks/valid',
+        'valid_info':   'data/sidewalks/valid_coco.json',
+
+        'has_gt': True,
+        'class_names': ["sidewalk"]
+    }),
+    "num_classes": 1
+})
