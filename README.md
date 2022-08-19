@@ -7,7 +7,7 @@ Splitting TIF tiles & vector annotations:
 - Download the BA32_3603 and BA32_3703 tiles in TIF format from https://data.linz.govt.nz/layer/95497-auckland-0075m-urban-aerial-photos-2017/data/, and unzip them into the input folder
 - Run `split_tiles.py` to split the TIF files into 700x700 tiles, and the corresponding labels from AKL_sidewalks.gpkg into separate geojson files. This script also generates COCO json files.
 - `cd ../../`
-- `python train.py --config=sidewalks --batch_size=5`
+- `python train.py --config=sidewalks_config`
 
 
 # **Y**ou **O**nly **L**ook **A**t **C**oefficien**T**s

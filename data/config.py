@@ -825,7 +825,7 @@ def set_dataset(dataset_name:str):
     cfg.dataset = eval(dataset_name)
     
 
-sidewalks = yolact_im700_config.copy({
+sidewalks_config = yolact_im700_config.copy({
     'name': 'sidewalks',
     'dataset': dataset_base.copy({
         'name': 'sidewalks',
