@@ -172,7 +172,6 @@ class CustomDataParallel(nn.DataParallel):
 def train():
     if not os.path.exists(args.save_folder):
         os.mkdir(args.save_folder)
-    print(cfg.dataset.train_info)
     dataset = COCODetection(image_path=cfg.dataset.train_images,
                             info_file=cfg.dataset.train_info,
                             transform=SSDAugmentation(MEANS))
@@ -231,7 +230,6 @@ def train():
     
     # Initialize everything
     if not cfg.freeze_bn: yolact_net.freeze_bn() # Freeze bn so we don't kill our means
-    print(cfg.max_size)
     yolact_net(torch.zeros(1, 3, cfg.max_size, cfg.max_size).cuda())
     if not cfg.freeze_bn: yolact_net.freeze_bn(True)
 

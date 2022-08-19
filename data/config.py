@@ -838,5 +838,5 @@ sidewalks = yolact_im700_config.copy({
         'has_gt': True,
         'class_names': ["sidewalk"]
     }),
-    "num_classes": 1
+    "num_classes": 2
 })
