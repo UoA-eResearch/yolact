@@ -4,7 +4,7 @@ This is a custom fork of yolact, to recognise sidewalks from aerial images inste
 Splitting TIF tiles & vector annotations:
 - `cd data/sidewalks`
 - Install solaris (https://solaris.readthedocs.io/en/latest/installation.html). Note that it requires tensorflow==1.13.1, which requires Python 3.7. solaris also requires shapely<2
-- Download the BA32_3603 and BA32_3703 tiles in TIF format from https://data.linz.govt.nz/layer/95497-auckland-0075m-urban-aerial-photos-2017/data/, and unzip them into the input folder
+- Download a collection of tiles in TIF format from https://data.linz.govt.nz/layer/95497-auckland-0075m-urban-aerial-photos-2017/data/, and unzip them into the input folder
 - Run `split_tiles.py` to split the TIF files into 700x700 tiles, and the corresponding labels from AKL_sidewalks.gpkg into separate geojson files. This script also generates COCO json files.
 - `cd ../../`
 - `python train.py --config=sidewalks_config`
