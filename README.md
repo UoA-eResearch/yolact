@@ -1,6 +1,6 @@
 This is a custom fork of yolact, to recognise sidewalks from aerial images instead of COCO objects.
 
-### Setup
+### Training
 Splitting TIF tiles & vector annotations:
 - `cd data/sidewalks`
 - Install solaris (https://solaris.readthedocs.io/en/latest/installation.html). Note that it requires tensorflow==1.13.1, which requires Python 3.7. solaris also requires shapely<2
@@ -8,6 +8,17 @@ Splitting TIF tiles & vector annotations:
 - Run `split_tiles.py` to split the TIF files into 700x700 tiles, and the corresponding labels from AKL_sidewalks.gpkg into separate geojson files. This script also generates COCO json files.
 - `cd ../../`
 - `python train.py --config=sidewalks_config`
+
+### Prediction
+
+Download the pretrained weights file from https://www.dropbox.com/s/8e3js8ngweiajjh/sidewalks_24_15000.pth?dl=0. This should have this level of accuracy:
+```
+       |  all  |  .50  |  .55  |  .60  |  .65  |  .70  |  .75  |  .80  |  .85  |  .90  |  .95  |
+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+   box | 35.18 | 66.60 | 61.91 | 56.05 | 49.06 | 42.07 | 33.03 | 23.18 | 13.66 |  5.82 |  0.43 |
+  mask | 31.10 | 57.12 | 54.22 | 49.29 | 44.00 | 38.36 | 31.14 | 20.93 | 12.37 |  3.54 |  0.04 |
+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+```
 
 
 # **Y**ou **O**nly **L**ook **A**t **C**oefficien**T**s
