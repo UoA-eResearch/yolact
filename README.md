@@ -11,7 +11,7 @@ Splitting TIF tiles & vector annotations:
 
 ### Prediction
 
-Download the pretrained weights file from https://www.dropbox.com/s/8e3js8ngweiajjh/sidewalks_24_15000.pth?dl=0. This should have this level of accuracy:
+Download the pretrained weights file from https://www.dropbox.com/s/8e3js8ngweiajjh/sidewalks_24_15000.pth?dl=0. You can use `python eval.py --config sidewalks_config --trained_model weights/sidewalks_24_15000.pth` to assess it's accuracy against the validation data. This should have this level of accuracy:
 ```
        |  all  |  .50  |  .55  |  .60  |  .65  |  .70  |  .75  |  .80  |  .85  |  .90  |  .95  |
 -------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
@@ -19,7 +19,8 @@ Download the pretrained weights file from https://www.dropbox.com/s/8e3js8ngweia
   mask | 31.10 | 57.12 | 54.22 | 49.29 | 44.00 | 38.36 | 31.14 | 20.93 | 12.37 |  3.54 |  0.04 |
 -------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
 ```
-
+You can use something like `python eval.py --config sidewalks_config --trained_model weights/sidewalks_24_15000.pth --score_threshold=0.15 --top_k=15 --image data/sidewalks/BA31_4047_1754237_5917567.jpg:data/sidewalks/sample_detection.jpg` to make a prediction. Result:
+![title](data/sidewalks/sample_detection.jpg)
 
 # **Y**ou **O**nly **L**ook **A**t **C**oefficien**T**s
 ```
