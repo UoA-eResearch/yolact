@@ -11,15 +11,15 @@ Splitting TIF tiles & vector annotations:
 
 ### Prediction
 
-Download the pretrained weights file from https://www.dropbox.com/s/8e3js8ngweiajjh/sidewalks_24_15000.pth?dl=0. You can use `python eval.py --config sidewalks_config --trained_model weights/sidewalks_24_15000.pth` to assess it's accuracy against the validation data. This should have this level of accuracy:
+Download the pretrained weights file from https://www.dropbox.com/s/513qj4dqui3psqm/sidewalks_72_22000.pth?dl=0. You can use `python eval.py --config sidewalks_config --trained_model weights/sidewalks_72_22000.pth` to assess it's accuracy against the validation data. This should have this level of accuracy:
 ```
        |  all  |  .50  |  .55  |  .60  |  .65  |  .70  |  .75  |  .80  |  .85  |  .90  |  .95  |
 -------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
-   box | 35.18 | 66.60 | 61.91 | 56.05 | 49.06 | 42.07 | 33.03 | 23.18 | 13.66 |  5.82 |  0.43 |
-  mask | 31.10 | 57.12 | 54.22 | 49.29 | 44.00 | 38.36 | 31.14 | 20.93 | 12.37 |  3.54 |  0.04 |
+   box | 39.58 | 70.46 | 66.44 | 62.17 | 57.07 | 49.86 | 39.59 | 28.21 | 16.58 |  4.96 |  0.50 |
+  mask | 35.02 | 60.77 | 58.14 | 54.66 | 49.05 | 43.84 | 36.73 | 27.46 | 15.78 |  3.73 |  0.07 |
 -------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
 ```
-You can use something like `python eval.py --config sidewalks_config --trained_model weights/sidewalks_24_15000.pth --score_threshold=0.15 --top_k=15 --image data/sidewalks/BA31_4047_1754237_5917567.jpg:data/sidewalks/sample_detection.jpg` to make a prediction. Result:
+You can use something like `python eval.py --config sidewalks_config --trained_model weights/sidewalks_72_22000.pth --score_threshold=0.15 --top_k=15 --image data/sidewalks/BA31_4047_1754237_5917567.jpg:data/sidewalks/sample_detection.jpg` to make a prediction. Result:
 ![title](data/sidewalks/sample_detection.jpg)
 
 # **Y**ou **O**nly **L**ook **A**t **C**oefficien**T**s
