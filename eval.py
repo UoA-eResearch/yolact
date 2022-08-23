@@ -45,7 +45,7 @@ def parse_args(argv=None):
                         help='Trained state_dict file path to open. If "interrupt", this will open the interrupt file.')
     parser.add_argument('--top_k', default=5, type=int,
                         help='Further restrict the number of predictions to parse')
-    parser.add_argument('--cuda', default=True, type=str2bool,
+    parser.add_argument('--cuda', default=torch.cuda.is_available(), type=str2bool,
                         help='Use cuda to evaulate model')
     parser.add_argument('--fast_nms', default=True, type=str2bool,
                         help='Whether to use a faster, but not entirely correct version of NMS.')
@@ -138,7 +138,9 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
     """
     if undo_transform:
         img_numpy = undo_image_transformation(img, w, h)
-        img_gpu = torch.Tensor(img_numpy).cuda()
+        img_gpu = torch.Tensor(img_numpy)
+        if args.cuda:
+            img_gpu = img_gpu.cuda()
     else:
         img_gpu = img / 255.0
         h, w, _ = img.shape
@@ -191,7 +193,10 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
         masks = masks[:num_dets_to_consider, :, :, None]
         
         # Prepare the RGB images for each mask given their color (size [num_dets, h, w, 1])
-        colors = torch.cat([get_color(j, on_gpu=img_gpu.device.index).view(1, 1, 1, 3) for j in range(num_dets_to_consider)], dim=0)
+        if args.cuda:
+            colors = torch.cat([get_color(j, on_gpu=img_gpu.device.index).view(1, 1, 1, 3) for j in range(num_dets_to_consider)], dim=0)
+        else:
+            colors = torch.cat([torch.Tensor(get_color(j)).view(1, 1, 1, 3) for j in range(num_dets_to_consider)], dim=0)
         masks_color = masks.repeat(1, 1, 1, 3) * colors * mask_alpha
 
         # This is 1 everywhere except for 1-mask_alpha where the mask is
@@ -278,7 +283,8 @@ def prep_benchmark(dets_out, h, w):
     
     with timer.env('Sync'):
         # Just in case
-        torch.cuda.synchronize()
+        if args.cuda:
+            torch.cuda.synchronize()
 
 def prep_coco_cats():
     """ Prepare inverted table for category id lookup given a coco cats object. """
@@ -413,8 +419,10 @@ def prep_metrics(ap_data, dets, img, gt, gt_masks, h, w, num_crowd, image_id, de
             scores = list(scores.cpu().numpy().astype(float))
             box_scores = scores
             mask_scores = scores
-        masks = masks.view(-1, h*w).cuda()
-        boxes = boxes.cuda()
+        masks = masks.view(-1, h*w)
+        if args.cuda:
+            masks = masks.cuda()
+            boxes = boxes.cuda()
 
 
     if args.output_coco_json:
@@ -593,7 +601,10 @@ def badhash(x):
     return x
 
 def evalimage(net:Yolact, path:str, save_path:str=None):
-    frame = torch.from_numpy(cv2.imread(path)).cuda().float()
+    if args.cuda:
+        frame = torch.from_numpy(cv2.imread(path)).cuda().float()
+    else:
+        frame = torch.from_numpy(cv2.imread(path)).float()
     batch = FastBaseTransform()(frame.unsqueeze(0))
     preds = net(batch)
 
@@ -658,8 +669,12 @@ def evalvideo(net:Yolact, path:str, out_path:str=None):
     else:
         num_frames = round(vid.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    net = CustomDataParallel(net).cuda()
-    transform = torch.nn.DataParallel(FastBaseTransform()).cuda()
+    if args.cuda:
+        net = CustomDataParallel(net).cuda()
+        transform = torch.nn.DataParallel(FastBaseTransform()).cuda()
+    else:
+        net = net.cpu()
+        transform = FastBaseTransform()
     frame_times = MovingAverage(100)
     fps = 0
     frame_time_target = 1 / target_fps
@@ -691,7 +706,10 @@ def evalvideo(net:Yolact, path:str, out_path:str=None):
 
     def transform_frame(frames):
         with torch.no_grad():
-            frames = [torch.from_numpy(frame).cuda().float() for frame in frames]
+            if args.cuda:
+                frames = [torch.from_numpy(frame).cuda().float() for frame in frames]
+            else:
+                frames = [torch.from_numpy(frame).float() for frame in frames]
             return frames, transform(torch.stack(frames, 0))
 
     def eval_network(inp):
@@ -1077,8 +1095,10 @@ if __name__ == '__main__':
         if args.cuda:
             cudnn.fastest = True
             torch.set_default_tensor_type('torch.cuda.FloatTensor')
+            map_location = None
         else:
             torch.set_default_tensor_type('torch.FloatTensor')
+            map_location = "cpu"
 
         if args.resume and not args.display:
             with open(args.ap_data_file, 'rb') as f:
@@ -1095,7 +1115,7 @@ if __name__ == '__main__':
 
         print('Loading model...', end='')
         net = Yolact()
-        net.load_weights(args.trained_model)
+        net.load_weights(args.trained_model, map_location)
         net.eval()
         print(' Done.')
 
