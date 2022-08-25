@@ -602,10 +602,14 @@ def badhash(x):
     return x
 
 def evalimage(net:Yolact, path:str, save_path:str=None):
-    if args.cuda:
-        frame = torch.from_numpy(cv2.imread(path)).cuda().float()
-    else:
-        frame = torch.from_numpy(cv2.imread(path)).float()
+    try:
+        if args.cuda:
+            frame = torch.from_numpy(cv2.imread(path)).cuda().float()
+        else:
+            frame = torch.from_numpy(cv2.imread(path)).float()
+    except:
+        print(f"Unable to read {path}!")
+        return
     batch = FastBaseTransform()(frame.unsqueeze(0))
     preds = net(batch)
 
@@ -620,6 +624,7 @@ def evalimage(net:Yolact, path:str, save_path:str=None):
         plt.show()
     else:
         cv2.imwrite(save_path, img_numpy)
+        print(path + ' -> ' + save_path)
 
 def evalimages(net:Yolact, input_folder:str, output_folder:str):
     if not os.path.exists(output_folder):
@@ -633,7 +638,6 @@ def evalimages(net:Yolact, input_folder:str, output_folder:str):
         out_path = os.path.join(output_folder, name)
 
         evalimage(net, path, out_path)
-        print(path + ' -> ' + out_path)
     print('Done.')
 
 from multiprocessing.pool import ThreadPool
