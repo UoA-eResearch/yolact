@@ -193,7 +193,10 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
         masks = masks[:num_dets_to_consider, :, :, None]
         
         # Prepare the RGB images for each mask given their color (size [num_dets, h, w, 1])
-        device_index = img_gpu.device.index or "cpu"
+        if args.cuda:
+            device_index = img_gpu.device.index
+        else:
+            device_index = "cpu"
         colors = torch.cat([get_color(j, on_gpu=device_index).view(1, 1, 1, 3) for j in range(num_dets_to_consider)], dim=0)
         masks_color = masks.repeat(1, 1, 1, 3) * colors * mask_alpha
 
