@@ -626,7 +626,7 @@ class FastBaseTransform(torch.nn.Module):
         try:
             self.mean = torch.Tensor(MEANS).float().cuda()[None, :, None, None]
             self.std  = torch.Tensor( STD ).float().cuda()[None, :, None, None]
-        except RuntimeError:
+        except:
             self.mean = torch.Tensor(MEANS).float()[None, :, None, None]
             self.std  = torch.Tensor( STD ).float()[None, :, None, None]
         self.transform = cfg.backbone.transform
